@@ -1,3 +1,4 @@
+//server.js
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -25,16 +26,27 @@ const io = new Server(server, {
   }
 });
 
+app.set('io', io);
+
+// Socket connection handling
+io.on('connection', (socket) => {
+    console.log('Client connected:', socket.id);
+  
+    socket.on('disconnect', () => {
+        console.log('Client disconnected:', socket.id);
+    });
+});
+
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
-// Basic route
+/**  Basic route
 app.get('/test', (req, res) => {
     res.json({ message: 'Server is running' });
   });
-
+*/
 app.use('/api/users', userRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/tasks', taskRoutes);

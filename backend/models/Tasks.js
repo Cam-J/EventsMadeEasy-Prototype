@@ -1,4 +1,5 @@
 // models/Task.js
+// models/Task.js
 import mongoose from 'mongoose';
 
 const taskSchema = new mongoose.Schema({
@@ -17,10 +18,9 @@ const taskSchema = new mongoose.Schema({
     enum: ['low', 'medium', 'high'],
     default: 'medium'
   },
-  dueDate: { type: Date },
+  dueDate: { type: Date }
 }, {
-    collection: 'tasks',
-}, {
+  collection: 'tasks',
   timestamps: true
 });
 
