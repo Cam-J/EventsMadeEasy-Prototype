@@ -114,79 +114,81 @@
     </div>
   </template>
   
-  <script>
-  export default {
-    name: 'TaskAnalytics',
-    props: {
-      event: {
-        type: Object,
-        required: true
-      }
-    },
-    computed: {
-      totalTasks() {
-        return this.event?.tasks?.length || 0;
-      },
-      completedTasks() {
-        return this.event?.tasks?.filter(task => task.status === 'completed').length || 0;
-      },
-      pendingTasks() {
-        return this.event?.tasks?.filter(task => task.status === 'pending').length || 0;
-      },
-      completionRate() {
-        if (!this.totalTasks) return 0;
-        return Math.round((this.completedTasks / this.totalTasks) * 100);
-      },
-      dueSoonTasks() {
-        const oneWeek = 7 * 24 * 60 * 60 * 1000;
-        const now = new Date();
-        return this.event?.tasks?.filter(task => {
-          const dueDate = new Date(task.dueDate);
-          return dueDate > now && dueDate - now <= oneWeek && task.status !== 'completed';
-        }).length || 0;
-      },
-      priorityCounts() {
-        const counts = { high: 0, medium: 0, low: 0 };
-        if (!this.event?.tasks) return counts;
-        
-        this.event.tasks.forEach(task => {
-          counts[task.priority] = (counts[task.priority] || 0) + 1;
-        });
-        
-        return counts;
-      },
-      priorityPercentages() {
-        const percentages = { high: 0, medium: 0, low: 0 };
-        if (!this.totalTasks) return percentages;
-        
-        Object.keys(this.priorityCounts).forEach(priority => {
-          percentages[priority] = Math.round((this.priorityCounts[priority] / this.totalTasks) * 100);
-        });
-        
-        return percentages;
-      },
-      upcomingTasks() {
-        if (!this.event?.tasks) return [];
-        
-        const now = new Date();
-        return this.event.tasks
-          .filter(task => {
-            const dueDate = new Date(task.dueDate);
-            return dueDate > now && task.status !== 'completed';
-          })
-          .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
-          .slice(0, 5); // Show only next 5 upcoming tasks
-      }
-    },
-    methods: {
-      formatDate(date) {
-        return new Date(date).toLocaleDateString();
-      }
+<script>
+export default {
+  name: 'TaskAnalytics',
+  props: {
+    event: {
+      type: Object,
+      required: true
     }
-  };
-  </script>
+  },
+
+  computed: {
+    totalTasks() {
+      return this.event?.tasks?.length || 0;
+    },
+    completedTasks() {
+      return this.event?.tasks?.filter(task => task.status === 'completed').length || 0;
+    },
+    pendingTasks() {
+      return this.event?.tasks?.filter(task => task.status === 'pending').length || 0;
+    },
+    completionRate() {
+      if (!this.totalTasks) return 0;
+      return Math.round((this.completedTasks / this.totalTasks) * 100);
+    },
+    dueSoonTasks() {
+      const oneWeek = 7 * 24 * 60 * 60 * 1000;
+      const now = new Date();
+      return this.event?.tasks?.filter(task => {
+        const dueDate = new Date(task.dueDate);
+        return dueDate > now && dueDate - now <= oneWeek && task.status !== 'completed';
+      }).length || 0;
+    },
+    priorityCounts() {
+      const counts = { high: 0, medium: 0, low: 0 };
+      if (!this.event?.tasks) return counts;
+    
+      this.event.tasks.forEach(task => {
+        counts[task.priority] = (counts[task.priority] || 0) + 1;
+      });
+        
+      return counts;
+    },
+    priorityPercentages() {
+      const percentages = { high: 0, medium: 0, low: 0 };
+      if (!this.totalTasks) return percentages;
+      
+      Object.keys(this.priorityCounts).forEach(priority => {
+        percentages[priority] = Math.round((this.priorityCounts[priority] / this.totalTasks) * 100);
+      });
+      
+      return percentages;
+    },
+    upcomingTasks() {
+      if (!this.event?.tasks) return [];
+      
+      const now = new Date();
+      return this.event.tasks
+        .filter(task => {
+          const dueDate = new Date(task.dueDate);
+          return dueDate > now && task.status !== 'completed';
+        })
+        .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+        .slice(0, 5); // Show only next 5 upcoming tasks
+    }
+  },
+
+  methods: {
+    formatDate(date) {
+      return new Date(date).toLocaleDateString();
+    }
+  }
+};
+</script>
   
-  <style scoped>
+<style scoped>
   .analytics-container {
     padding: 1.5rem;
     display: flex;
@@ -362,4 +364,4 @@
       grid-template-columns: 1fr;
     }
   }
-  </style>
+</style>
