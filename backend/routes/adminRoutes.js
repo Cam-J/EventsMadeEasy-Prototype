@@ -21,7 +21,6 @@ const authenticateToken = (req, res, next) => {
 
 // Middleware to check if user is an admin
 const isAdmin = (req, res, next) => {
-  // Assuming the user's role is set in the JWT token during authentication
   if (req.user && req.user.role === 'admin') {
     next();
   } else {
@@ -40,7 +39,7 @@ router.get('/users', isAdmin, async (req, res) => {
     const users = await User.aggregate([
       {
         $lookup: {
-          from: 'events', // Make sure this matches your events collection name
+          from: 'events',
           localField: '_id',
           foreignField: 'participants',
           as: 'events'
@@ -68,7 +67,7 @@ router.get('/users', isAdmin, async (req, res) => {
   }
 });
 
-// Update user role (Admin only)
+// Update user role
 router.put('/:userId/role', isAdmin, async (req, res) => {
   try {
     const { userId } = req.params;
@@ -103,7 +102,7 @@ router.put('/:userId/role', isAdmin, async (req, res) => {
   }
 });
 
-// Delete user (Admin only)
+// Delete user
 router.delete('/:userId', isAdmin, async (req, res) => {
   try {
     const { userId } = req.params;
@@ -114,7 +113,6 @@ router.delete('/:userId', isAdmin, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Optional: Remove user's events
     await Event.deleteMany({ creator: userId });
 
     // Delete the user

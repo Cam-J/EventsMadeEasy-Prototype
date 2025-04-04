@@ -95,7 +95,7 @@ router.post('/register', async (req, res) => {
     const user = new User({
       username,
       email,
-      password, // would has in production
+      password, // would hasH in production
       role: 'user' //default
     });
 

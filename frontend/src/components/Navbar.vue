@@ -72,7 +72,7 @@
 </script>
 
 <style scoped>
-    .navbar {
+.navbar {
   background-color: #1a1a1a;
   padding: 1rem 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

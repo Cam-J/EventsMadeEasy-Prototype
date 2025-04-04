@@ -78,10 +78,7 @@
           <div class="priority-item">
             <div class="priority-label">Low</div>
             <div class="priority-bar-container">
-              <div 
-                class="priority-bar low"
-                :style="{ width: `${priorityPercentages.low}%` }"
-              >
+              <div class="priority-bar low":style="{ width: `${priorityPercentages.low}%` }">
                 {{ priorityCounts.low || 0 }}
               </div>
             </div>
