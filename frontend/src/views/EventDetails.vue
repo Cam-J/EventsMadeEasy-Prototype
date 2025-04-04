@@ -310,7 +310,15 @@
             }
         });
 
-        // Optional: Listen for connection status
+        socket.on('eventDeleted', ({ eventId }) => {
+          console.log("Socket received eventDeleted event:", eventId);
+          // If the current event is deleted, redirect to events list
+          if (eventId === this.$route.params.id) {
+            console.log("Current event was deleted, redirecting...");
+            this.$router.push('/events');
+          }
+        });
+
         socket.on('connect', () => {
             console.log('Socket connected');
         });
@@ -318,8 +326,7 @@
         socket.on('disconnect', () => {
             console.log('Socket disconnected');
         });
-    },
-    
+    }, 
     beforeUnmount() {
         console.log('Component unmounting, removing socket listeners');
         socket.off('taskCreated');

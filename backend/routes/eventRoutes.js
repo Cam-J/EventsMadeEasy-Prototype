@@ -35,13 +35,14 @@ router.get('/:id', authMiddleware, async (req, res) => {
         
         console.log('Event Found:', event);
 
-        //check if user is participant or creator
+        //check if user is participant, creator or admin
         const isParticipant = event.participants.some(
             participant => participant.toString() === req.user.id
         );
         const isCreator = event.createdBy.toString() === req.user.id;
+        const isAdmin = req.user.role;
 
-        if (!isParticipant && !isCreator) {
+        if (!isParticipant && !isCreator && !isAdmin) {
             console.log('Access Denied');
             return res.status(403).json({ 
               message: 'You do not have permission to access this event' 
@@ -68,6 +69,55 @@ router.post('/', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('Error creating event:', error);
     res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Delete event
+router.delete('/:id', authMiddleware, async (req, res) => {
+  try {
+      console.log('Event Deletion Attempt:', {
+          eventId: req.params.id,
+          userId: req.user.id,
+          userName: req.user.email
+      });
+
+      const event = await Event.findById(req.params.id).populate('tasks');
+    
+      if (!event) {
+          console.log('Event not found:', req.params.id);
+          return res.status(404).json({ message: 'Event not found' });
+      }
+      
+      console.log('Event Found:', event);
+
+      //check if user is creator
+      const isCreator = event.createdBy.toString() === req.user.id;
+
+      if (!isCreator) {
+          console.log('Access Denied');
+          return res.status(403).json({ 
+            message: 'You do not have permission to access this event' 
+          });
+      }
+      
+      //delete all tasks associated with event
+      if (event.tasks && event.tasks.length > 0) {
+        await Task.deleteMany({ event: req.params.id });
+        console.log('Deleted all tasks for event:', req.params.id);
+      }
+
+      // Delete the event
+      await Event.findByIdAndDelete(req.params.id);
+      console.log('Event deleted:', req.params.id);
+
+            
+      // Emit socket event for real-time updates
+      io.emit('eventDeleted', { eventId: req.params.id });
+      res.status(200).json({ message: 'Event deleted successfully' });
+      
+    } catch (error) {
+      console.error('Error fetching event:', error);
+      res.status(500).json({ message: 'Server error' });
   }
 });
 
