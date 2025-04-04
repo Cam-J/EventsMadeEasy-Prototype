@@ -8,42 +8,26 @@
         </div>
         
         <div class="nav-links">
-          <router-link 
-            to="/" 
-            custom 
-            v-slot="{ navigate }"
-            class="nav-link"
-          >
+          <router-link to="/" custom v-slot="{ navigate }"class="nav-link">
             <span @click="navigate" role="link">Home</span>
           </router-link>
           
-          <router-link 
-            to="/dashboard" 
-            custom 
-            v-slot="{ navigate }"
-            class="nav-link"
-          >
+          <router-link to="/dashboard" custom v-slot="{ navigate }" class="nav-link">
             <span @click="navigate" role="link">Dashboard</span>
           </router-link>
           
-          <router-link 
-            to="/events" 
-            custom 
-            v-slot="{ navigate }"
-            class="nav-link"
-          >
+          <router-link to="/events" custom v-slot="{ navigate }" class="nav-link">
             <span @click="navigate" role="link">Events</span>
           </router-link>
           
-          <router-link 
-            to="/tasks" 
-            custom 
-            v-slot="{ navigate }"
-            class="nav-link"
-          >
+          <router-link to="/tasks" custom v-slot="{ navigate }"class="nav-link">
             <!--<span @click="navigate" role="link">Tasks</span>-->
           </router-link>
-  
+
+          <router-link v-if="isAdmin" to="/admin" custom v-slot="{ navigate }"class="nav-link admin-link">
+            <span @click="navigate" role="link">Admin Panel</span>
+          </router-link>
+          
           <template v-if="isLoggedIn">
             <button @click="handleLogout" class="logout-btn">Logout</button>
           </template>
@@ -68,6 +52,12 @@
     computed: {
       isLoggedIn() {
         return !!localStorage.getItem('token')
+      },
+
+      isAdmin() {
+        // Check if logged-in user is an admin
+        const user = localStorage.getItem('user');
+        return user ? JSON.parse(user).role === 'admin' : false;
       }
     },
     methods: {

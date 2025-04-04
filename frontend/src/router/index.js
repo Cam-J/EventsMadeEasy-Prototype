@@ -5,6 +5,8 @@ import Dashboard from '../views/Dashboard.vue'
 import EventDetails from '../views/EventDetails.vue'
 import Events from '../views/Events.vue'
 import Tasks from '../views/Tasks.vue'
+import Registration from '../views/Registration.vue'
+import UserManagement from '../views/adminView.vue'
 
 const routes = [
   {
@@ -40,6 +42,21 @@ const routes = [
     name: 'Tasks',
     component: Tasks,
     //meta: { requiresAuth: true }
+  },
+  {
+    path: '/registration',
+    name: 'Registration',
+    component: Registration,
+    //meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin',
+    name: 'UserManagement',
+    component: UserManagement,
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: true
+    }
   }
 ]
 
@@ -47,19 +64,27 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior() {
-    // Always scroll to top
     return { top: 0 }
   }
 })
 
 router.beforeEach(async (to, from, next) => {
   const token = localStorage.getItem('token')
+  const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null
   
+  // Check if authentication is required
   if (to.meta.requiresAuth && !token) {
     next('/login')
-  } else if (to.path === '/login' && token) {
+  } 
+  // Check if admin access is required
+  else if (to.meta.requiresAdmin && (!user || user.role !== 'admin')) {
     next('/dashboard')
-  } else {
+  } 
+  // Redirect authenticated users from login/register
+  else if ((to.path === '/login' || to.path === '/register') && token) {
+    next('/dashboard')
+  } 
+  else {
     next()
   }
 })

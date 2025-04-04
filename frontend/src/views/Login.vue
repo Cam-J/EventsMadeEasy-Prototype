@@ -27,6 +27,10 @@
           <button type="submit" class="login-btn" :disabled="isLoading">
             {{ isLoading ? 'Logging in...' : 'Login' }}
           </button>
+          <div class="register-link">
+            Don't have an account? 
+            <router-link to="/registration">Register</router-link>
+          </div>
         </form>
       </div>
     </div>

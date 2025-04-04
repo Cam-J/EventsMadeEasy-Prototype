@@ -40,7 +40,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
             participant => participant.toString() === req.user.id
         );
         const isCreator = event.createdBy.toString() === req.user.id;
-        const isAdmin = req.user.role;
+        const isAdmin = req.user && req.user.role == 'admin';
 
         if (!isParticipant && !isCreator && !isAdmin) {
             console.log('Access Denied');
@@ -90,10 +90,11 @@ router.delete('/:id', authMiddleware, async (req, res) => {
       
       console.log('Event Found:', event);
 
-      //check if user is creator
+      //check if user is creator or admin
       const isCreator = event.createdBy.toString() === req.user.id;
+      const isAdmin = req.user && req.user.role == 'admin';
 
-      if (!isCreator) {
+      if (!isCreator && !isAdmin) {
           console.log('Access Denied');
           return res.status(403).json({ 
             message: 'You do not have permission to access this event' 
